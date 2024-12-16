@@ -3,11 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mob</title>
+    <title>Basic Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            grid-gap: 10px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .calculator input {
+            grid-column: span 4;
+            font-size: 2em;
+            padding: 10px;
+            text-align: right;
+        }
+
+        .calculator button {
+            font-size: 1.5em;
+            padding: 20px;
+            border: none;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .calculator button:hover {
+            background-color: #ddd;
+        }
+
+        #operation-display {
+            font-size: 1.2em;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello World</h1>
-    <h2>Test JavaScript</h2>
-    <script src="script.js"></script>
+    <h2>Basic Calculator System</h2>
+    <div class="calculator">
+        <input type="text" id="display" disabled />
+        <button onclick="appendNumber(7)">7</button>
+        <button onclick="appendNumber(8)">8</button>
+        <button onclick="appendNumber(9)">9</button>
+        <button onclick="setOperation('+')">+</button>
+
+        <button onclick="appendNumber(4)">4</button>
+        <button onclick="appendNumber(5)">5</button>
+        <button onclick="appendNumber(6)">6</button>
+        <button onclick="setOperation('-')">-</button>
+
+        <button onclick="appendNumber(1)">1</button>
+        <button onclick="appendNumber(2)">2</button>
+        <button onclick="appendNumber(3)">3</button>
+        <button onclick="setOperation('*')">*</button>
+
+        <button onclick="appendNumber(0)">0</button>
+        <button onclick="clearDisplay()">C</button>
+        <button onclick="calculateResult()">=</button>
+        <button onclick="setOperation('/')">/</button>
+    </div>
+
+    <div id="operation-display"></div> <!-- ช่องแสดงการคำนวณ -->
+
+    <script>
+        let currentInput = ''; // Keeps the current number being typed
+        let previousInput = ''; // Keeps the previous number for operations
+        let operation = null; // Stores the operation to perform
+
+        // Function to append numbers to the current input
+        function appendNumber(number) {
+            currentInput += number;
+            document.getElementById('display').value = currentInput;
+            updateOperationDisplay(); // Update the operation display with the current input
+        }
+
+        // Function to clear the display and reset values
+        function clearDisplay() {
+            currentInput = '';
+            previousInput = '';
+            operation = null;
+            document.getElementById('display').value = '';
+            document.getElementById('operation-display').innerText = ''; // Clear operation display
+        }
+
+        // Function to set the operation (+, -, *, /)
+        function setOperation(op) {
+            if (currentInput === '') return; // Do nothing if there's no number entered
+            if (previousInput !== '') {
+                calculateResult(); // Calculate the result if there's already a previous number
+            }
+            operation = op;
+            previousInput = currentInput;
+            currentInput = ''; // Reset current input for the next number
+            updateOperationDisplay(); // Update operation display
+        }
+
+        // Function to calculate the result based on the selected operation
+        function calculateResult() {
+            if (currentInput === '' || previousInput === '') return; // Ensure there's input for calculation
+
+            let result;
+            const prev = parseFloat(previousInput); // Convert the previous input to a number
+            const current = parseFloat(currentInput); // Convert the current input to a number
+
+            // Switch based on the operation chosen
+            switch (operation) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    if (current === 0) {
+                        alert('Cannot divide by zero!'); // Prevent division by zero
+                        clearDisplay();
+                        return;
+                    }
+                    result = prev / current;
+                    break;
+                default:
+                    return;
+            }
+
+            currentInput = result.toString(); // Convert the result to string to display it
+            operation = null; // Reset operation for the next calculation
+            previousInput = ''; // Reset previous input
+            document.getElementById('display').value = currentInput; // Show the result on the display
+            document.getElementById('operation-display').innerText = ''; // Clear operation display
+        }
+
+        // Function to update the operation display with the current calculation
+        function updateOperationDisplay() {
+            if (previousInput !== '') {
+                document.getElementById('operation-display').innerText = `${previousInput} ${operation} ${currentInput}`;
+            }
+        }
+    </script>
 </body>
 </html>
